@@ -18,12 +18,12 @@ import androidx.compose.ui.tooling.preview.Preview
 import com.thousif.cloudy.presentation.WeatherScreen
 import com.thousif.cloudy.presentation.WeatherViewModel
 import com.thousif.cloudy.ui.theme.CloudyTheme
-import dagger.hilt.android.AndroidEntryPoint
 
 
-@AndroidEntryPoint
+
+
 class MainActivity : ComponentActivity() {
-    private val viewModel: WeatherViewModel by viewModels()
+    private val viewModel: WeatherViewModel by viewModels{WeatherViewModel.Factory()}
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()

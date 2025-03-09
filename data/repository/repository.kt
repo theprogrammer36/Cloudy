@@ -1,16 +1,16 @@
 package com.thousif.cloudy.data.repository
 
+import com.thousif.cloudy.data.remote.ApiClient
+import com.thousif.cloudy.data.remote.ApiClient.api
 import com.thousif.cloudy.data.remote.WeatherApi
 import com.thousif.cloudy.data.remote.WeatherResponse
 import com.thousif.cloudy.domain.repository.WeatherRepository
 import com.thousif.cloudy.utils.Constants.API_KEY
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
-import javax.inject.Inject
 
-class WeatherRepositoryImpl @Inject constructor(
-    private val api: WeatherApi
-) : WeatherRepository {
+class WeatherRepositoryImpl: WeatherRepository {
+    private val api = ApiClient.api
 
     override suspend fun getWeatherByCity(cityName: String): Result<WeatherResponse> =
         withContext(Dispatchers.IO) {
@@ -41,4 +41,18 @@ class WeatherRepositoryImpl @Inject constructor(
             Result.failure(e)
         }
     }
+
+    companion object {
+        @Volatile
+        private var instance: WeatherRepositoryImpl? = null
+
+        fun getInstance(): WeatherRepositoryImpl {
+            return instance ?: synchronized(this) {
+                instance ?: WeatherRepositoryImpl().also { instance = it }
+            }
+
+        }
+
+    }
+
 }

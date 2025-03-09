@@ -1,19 +1,20 @@
 package com.thousif.cloudy.presentation
 
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
-import com.thousif.cloudy.data.remote.WeatherResponse
+import com.thousif.cloudy.data.repository.WeatherRepositoryImpl
 import com.thousif.cloudy.domain.repository.WeatherRepository
-import dagger.hilt.android.lifecycle.HiltViewModel
+
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
-import javax.inject.Inject
 
 
-@HiltViewModel
-class WeatherViewModel @Inject constructor(
-    private val repository: WeatherRepository
+
+
+class WeatherViewModel (
+    private val repository: WeatherRepository = WeatherRepositoryImpl.getInstance()
 ) : ViewModel() {
 
     private val _state = MutableStateFlow<WeatherState>(WeatherState.Initial)
@@ -32,6 +33,16 @@ class WeatherViewModel @Inject constructor(
                         exception.message ?: "An unexpected error occurred"
                     )
                 }
+        }
+    }
+
+    class Factory : ViewModelProvider.Factory {
+        @Suppress("UNCHECKED_CAST")
+        override fun <T : ViewModel> create(modelClass: Class<T>): T {
+            if (modelClass.isAssignableFrom(WeatherViewModel::class.java)) {
+                return WeatherViewModel() as T
+            }
+            throw IllegalArgumentException("Unknown ViewModel class")
         }
     }
 }
